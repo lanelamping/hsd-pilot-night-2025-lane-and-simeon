@@ -4,6 +4,8 @@ from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageEnhance
 import os
 import io
 import random
+import pygame
+
 
 class WildWestPosterGenerator:
     def __init__(self, root):
@@ -19,6 +21,12 @@ class WildWestPosterGenerator:
         self.random_var = tk.BooleanVar(value=False)
         self.uploaded_image_path = None
         self.generated_poster = None
+
+        pygame.init()
+        pygame.mixer.init()
+        sound_effect = pygame.mixer.Sound("C:\Users\lanel\Documents\GitHub\hsd-pilot-night-2025-lane-and-simeon\wildWest.mp3")
+        sound_effect.set_volume(0.5)
+        sound_effect.play()
         
         self.setup_gui()
     
