@@ -26,7 +26,7 @@ class WildWestPosterGenerator:
         pygame.mixer.init()
         sound_effect = pygame.mixer.Sound(r"C:\Users\lanel\Documents\GitHub\hsd-pilot-night-2025-lane-and-simeon\wildWest.mp3")
         sound_effect.set_volume(0.5)
-        sound_effect.play()
+        sound_effect.play(-1)
         
         self.setup_gui()
     
