@@ -3,6 +3,7 @@ from tkinter import ttk, filedialog, messagebox, PhotoImage
 from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageEnhance
 import os
 import io
+import random
 
 class WildWestPosterGenerator:
     def __init__(self, root):
@@ -15,6 +16,7 @@ class WildWestPosterGenerator:
         self.name_var = tk.StringVar()
         self.location_var = tk.StringVar()
         self.template_var = tk.StringVar(value="wanted")
+        self.random_var = tk.BooleanVar(value=False)
         self.uploaded_image_path = None
         self.generated_poster = None
         
@@ -53,10 +55,19 @@ class WildWestPosterGenerator:
         # Template selection
         tk.Label(input_frame, text="Template:", font=("Courier New", 12, "bold"), 
                 fg='#C3976A', bg='#3A160E').grid(row=2, column=0, sticky='w', pady=5)
-        template_combo = ttk.Combobox(input_frame, textvariable=self.template_var, 
+        # Make the template combobox an instance attribute so we can enable/disable it
+        self.template_combo = ttk.Combobox(input_frame, textvariable=self.template_var, 
                                      values=["wanted", "sheriff", "bounty"], 
                                      state="readonly", font=("Courier New", 12))
-        template_combo.grid(row=2, column=1, padx=(10, 0), pady=5, sticky='w')
+        self.template_combo.grid(row=2, column=1, padx=(10, 0), pady=5, sticky='w')
+
+        # Random toggle (checkbox) - when enabled, template selection is randomized on generate
+        random_check = tk.Checkbutton(input_frame, text="Random Template", 
+                                      variable=self.random_var, onvalue=True, offvalue=False,
+                                      command=self.toggle_random,
+                                      font=("Courier New", 10, "bold"),
+                                      fg='#C3976A', bg='#3A160E', selectcolor='#3A160E')
+        random_check.grid(row=2, column=2, padx=(10, 0), pady=5, sticky='w')
         
         # Image upload section
         image_frame = tk.Frame(main_frame, bg='#3A160E')
@@ -115,6 +126,20 @@ class WildWestPosterGenerator:
             filename = os.path.basename(file_path)
             self.image_label.config(text=f"Selected: {filename}")
     
+    def toggle_random(self):
+        """Enable or disable the template combobox depending on the random toggle."""
+        if self.random_var.get():
+            # disable combobox when random is on
+            try:
+                self.template_combo.configure(state='disabled')
+            except Exception:
+                pass
+        else:
+            try:
+                self.template_combo.configure(state='readonly')
+            except Exception:
+                pass
+    
     def create_sepia_filter(self, image):
         # Apply sepia filter to the image
 
@@ -143,7 +168,14 @@ class WildWestPosterGenerator:
 
         name = self.name_var.get().strip()
         location = self.location_var.get().strip()
-        template = self.template_var.get()
+        # If random toggle is active, pick a random template and set template_var so user can see it
+        if self.random_var.get():
+            values = list(self.template_combo['values']) if hasattr(self, 'template_combo') else ["wanted", "sheriff", "bounty"]
+            template = random.choice(values)
+            # reflect chosen template in the UI
+            self.template_var.set(template)
+        else:
+            template = self.template_var.get()
         
         if not name:
             messagebox.showerror("Error", "Please enter a name!")
