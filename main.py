@@ -4,9 +4,6 @@ from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageEnhance
 import os
 import io
 
-# TO LANE
-# These comments are for you :)
-
 class WildWestPosterGenerator:
     def __init__(self, root):
         self.root = root
